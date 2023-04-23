@@ -29,8 +29,9 @@ export async function getQuestions(payload) {
         llm: model,
     });
 
-
     const response = await chain.call({ text: payload });
+
+    console.log('response.text', response.text)
 
     return response.text
 }
