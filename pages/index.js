@@ -1,7 +1,7 @@
 
 import { useWhisper } from '@chengsokdara/use-whisper'
 import { useState, useEffect, useRef, useMemo } from 'react'
-
+import OPENAI_API_KEY from '../.env.local'
 
 
 export default function Home() {
@@ -135,7 +135,8 @@ export default function Home() {
 
   //VOICE TO TEXT
 
-
+ 
+ 
   const {
     recording,
     speaking,
@@ -145,7 +146,7 @@ export default function Home() {
     startRecording,
     stopRecording,
   } = useWhisper({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: OPENAI_API_KEY,
     streaming: true,
     timeSlice: 1_000,
     whisperConfig: {
