@@ -5,86 +5,113 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 
 
 export default function Home() {
-  const [inputValue, setInputValue] = useState('')
-  const [questions, setQuestions] = useState('')
+    const [inputValue, setInputValue] = useState('https://danielmiessler.com/blog/spqa-ai-architecture-replace-existing-software/')
+    const [questions, setQuestions] = useState('')
 
-  const [inputSummary, setInputSummary] = useState('')
-  const [studentAnswer, setStudentAnswer] = useState('')
+    const [inputSummary, setInputSummary] = useState('AI is transforming the way businesses use software with GPTs, allowing them to adapt to how we do business, instead of us adapting to the software. The new architecture is a four-component structure based around GPTs: State, Policy, Questions, and Action, allowing for an Understanding-based architecture with nearly unlimited input. This will enable applications to create documents, strategies, presentations and more in minutes, instead of taking thousands of hours of work.')
+    const [studentAnswer, setStudentAnswer] = useState('')
+
+    const [score, setScore] = useState('')
+    const [gradingComponent, setGradingComponent] = useState([])
+
+    // ------ SCRAPER ---------
+    async function runScraper(input) {
+        const response = await fetch('/api/APIscraper', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ input }),
+        })
+
+        const data = await response.text()
+        const final = JSON.parse(data).output
+        // const dataJSON = JSON.parse(final)
+        // return dataJSON
+        return final
+    }
+    // ------ SCRAPER ---------
 
 
-  const [gradingComponent, setGradingComponent] = useState([])
+    // ------ QUESTIONER ---------
+    async function runQuestioner(article) {
+        // console.log('in runQuestioner', article.substring(0, 100))
+        const response = await fetch('/api/APIagent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ input: article }),
+        })
 
-  const [isRecording, setIsRecording] = useState(false)
-  
-  // ------ QUESTIONER ---------
-  async function runQuestioner(input) {
+        const data = await response.text()
+        const final = JSON.parse(data).output
+        const dataJSON = JSON.parse(final)
 
-    const response = await fetch('/api/APIagent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({input}),
-    })
+        dataJSON.questions.forEach(element => {
+            runStudent(inputSummary, element)
+        });
+        setQuestions(final)
+    }
+    // ------ QUESTIONER ---------
 
-    const data = await response.text()
-    const final = JSON.parse(data).output
-    const dataJSON = JSON.parse(final)
+    // ------ STUDENT ---------
+    async function runStudent(input, question) {
+        const response = await fetch('/api/APIstudent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ input: input, question: question }),
+        })
 
-    dataJSON.questions.forEach(element => {
-      runStudent(inputSummary, element)
-    });
-    setQuestions(final)
-  }
-  // ------ QUESTIONER ---------
+        const data = await response.text()
+        const final = JSON.parse(data).output
 
-  // ------ STUDENT ---------
-  async function runStudent(input, question) {
-    const response = await fetch('/api/APIstudent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({input: input, question: question}),
-    })
+        runGrader(inputValue, question, final)
 
-    const data = await response.text()
-    const final = JSON.parse(data).output
+        setStudentAnswer(final)
+    }
+    // ------ STUDENT ---------
 
-    runGrader(inputValue, question, final)
+    // ------ GRADER ---------
+    async function runGrader(input, question, answer) {
+        const response = await fetch('/api/APIgrader', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ input: input, question: question, answer: answer }),
+        })
 
-    setStudentAnswer(final)
-  }
-  // ------ STUDENT ---------
-
-  // ------ GRADER ---------
-  async function runGrader(input, question, answer) {
-    const response = await fetch('/api/APIgrader', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({input: input, question: question, answer: answer}),
-    })
-
-    const data = await response.text()
-    const final = JSON.parse(data).output
+        const data = await response.text()
+        const final = JSON.parse(data).output
 
     const parsed = JSON.parse(final)
     
     setGradingComponent((prev) => [...prev, {question: question, answer: answer, score: parsed.grade, feedback: parsed.feedback}])
 
-  }
-  // ------ GRADER ---------
+    }
+    // ------ GRADER ---------
 
 
 
-  async function handleSubmitStudent(e) {
-    e.preventDefault()
-    
-    setGradingComponent([])
-    runQuestioner(inputValue)
-  }
+
+
+    async function handleSubmitDownload(e) {
+        e.preventDefault()
+        var article = await runScraper(inputValue)
+        // console.log('article', article)
+        document.getElementById("form-student").style.visibility = "visible"
+
+        runQuestioner(article)
+    }
+
+    async function handleSubmitStudent(e) {
+        e.preventDefault()
+        setScore('')
+        setGradingComponent([])
+    }
 
   function GradingReact({question, answer, score, feedback}) {
     return (
@@ -130,58 +157,47 @@ export default function Home() {
     setInputSummary(transcript.text)
   }, [transcript])
 
-  return (
-    <>
-    <div className='bg-gray-800 h-full'>
-    <div className='container mx-auto h-full w-5/6 py-3'>
-    <h1 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold text-5xl pb-4'>Socraitic</h1>
+    return (
+        <>
+            <div className='bg-gray-800 h-full'>
+                <div className='container mx-auto h-full w-5/6 py-3'>
+                    <h1 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold text-5xl pb-4'>Socraitic</h1>
+
 
     <button id='voice' type='submit' onClick={() => startRecording()} className='bg-purple-500 rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300'>record</button>
     <button id='voice' type='submit' onClick={() => stopRecording()} className='bg-purple-500 rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300'>stop</button>
 
-
- 
-
-
-    <div className='flex h-full justify-items'>
-    
- 
-
-  
-
-
-
-
-    <form className='flex-grow p-1'>
+    <div className='flex items-center justify-center h-full'>
+    <form onSubmit={handleSubmitDownload} className='flex-grow p-1'>
     <h2 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold pb-2'>Input Text</h2>
         <div className='flex rounded-lg border border-gray-700 bg gray-800'>
         <textarea type="text" className='flex-grow px-4 py-2 bg-transparent text-white focus:outline-none overflow-y-scroll' placeholder={'Ask something'} value={inputValue} onChange={(e)=> setInputValue(e.target.value)} />
-        
+        <button type='submit' className='bg-purple-500 rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300'>Download</button>
         </div>
     </form>
 
-    <form onSubmit={handleSubmitStudent} className=' flex-grow p-1'>
-    <h2 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold pb-2 mt-4'>User Explanation</h2>
-        <div className='flex rounded-lg border border-gray-700 bg gray-800 '>
-        <textarea type="text" className='flex-grow px-4 py-2 bg-transparent text-white focus:outline-none overflow-y-scroll' placeholder={'Ask something'} value={inputSummary} onChange={(e)=> setInputSummary(e.target.value)} />
-        <button type='submit' className='bg-purple-500 rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300'>Send</button>
-        </div>
-    </form>
-    </div>
+                        <form id="form-student" onSubmit={handleSubmitStudent} className=' flex-grow p-1' style={{ visibility: 'hidden' }}>
+                            <h2 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold pb-2 mt-4'>User Explanation</h2>
+                            <div className='flex rounded-lg border border-gray-700 bg gray-800 '>
+                                <textarea type="text" className='flex-grow px-4 py-2 bg-transparent text-white focus:outline-none overflow-y-scroll' placeholder={'Ask something'} value={inputSummary} onChange={(e) => setInputSummary(e.target.value)} />
+                                <button type='submit' className='bg-purple-500 rounded-lg px-4 py-2 text-white font-semibold focus:outline-none hover:bg-purple-600 transition-colors duration-300'>Send</button>
+                            </div>
+                        </form>
+                    </div>
 
-          {gradingComponent.length > 0 ? (
-            gradingComponent.map((item, index) => (
-              <GradingReact key={index} {...item} />
-            ))
-          ) : (
-            <div className='h-screen'></div>
-          )}
+                    {gradingComponent.length > 0 ? (
+                        gradingComponent.map((item, index) => (
+                            <GradingReact key={index} {...item} />
+                        ))
+                    ) : (
+                        <div className='h-screen'></div>
+                    )}
 
 
-    </div>
-    </div>
-    </>
-  )
+                </div>
+            </div >
+        </>
+    )
 }
 
 

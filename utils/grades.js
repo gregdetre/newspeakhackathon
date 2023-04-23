@@ -12,19 +12,19 @@ const KEY = process.env.OPENAI_API_KEY
 export async function getGrader(payload, question, answer) {
 
     const model = new ChatOpenAI({
-        openAIApiKey: KEY, 
+        openAIApiKey: KEY,
         temperature: 0,
-        
-       })
+
+    })
 
     //const template = "your task is to grade the following answer based on the question and the original source material. you're only allowed to answer with a mark between 0 and 100"
-    const template = "Your task is to grade the following answer based on the question and the original source material. your answer has to be a JSON object with a key called 'grade' and a value between 0 and 100 and a key called 'feedback' and a value of type string. your answer cant contain anything else other than the JSON object."
+    const template = "Your task is to grade the following answer based on the question and the original source material. Your answer has to be a JSON object with a key called 'grade' and a value between 0 and 100 and a key called 'feedback' and a value of type string. Your answer can't contain anything else other than the JSON object."
 
     const prompt = ChatPromptTemplate.fromPromptMessages([
-    SystemMessagePromptTemplate.fromTemplate(template),
-    HumanMessagePromptTemplate.fromTemplate("original source: {text}"),
-    HumanMessagePromptTemplate.fromTemplate("question: {question}"),
-    HumanMessagePromptTemplate.fromTemplate("answer: {answer}"),
+        SystemMessagePromptTemplate.fromTemplate(template),
+        HumanMessagePromptTemplate.fromTemplate("original source: {text}"),
+        HumanMessagePromptTemplate.fromTemplate("question: {question}"),
+        HumanMessagePromptTemplate.fromTemplate("answer: {answer}"),
     ]);
 
     const chain = new LLMChain({
