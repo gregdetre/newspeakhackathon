@@ -145,7 +145,7 @@ export default function Home() {
     startRecording,
     stopRecording,
   } = useWhisper({
-    apiKey: "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",
+    apiKey: process.env.OPENAI_API_KEY,
     streaming: true,
     timeSlice: 1_000,
     whisperConfig: {
