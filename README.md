@@ -36,3 +36,42 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+# Installation for local dev
+
+## Javascript
+
+Add an `.env.local`, e.g.
+
+```
+OPENAI_API_KEY = "blah"
+```
+
+(GD is this right?)
+`npm install`
+
+`npm run dev`
+
+
+## Python
+
+Clone the repo: `https://github.com/gregdetre/newspeakhackathon`
+
+Change to that directory, create a virtualenv, and activate it:
+
+`cd path/to/newspeakhackathon`
+
+`virtualenv venv`
+
+`source venv/bin/activate`
+
+Install the Python requirements:
+
+`pip install -r requirements.txt`
+
+Test that things are working:
+
+`python utils/main.py`
+
+

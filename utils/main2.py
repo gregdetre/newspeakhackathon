@@ -2,9 +2,11 @@ from langchain.prompts import PromptTemplate
 from langchain.llms import OpenAI
 from langchain.chains import LLMChain
 import openai
-# import os
+import os
+import prompts
 
-# os.environ["OPENAI_API_KEY"] = open("openai.SECRET", "r").read().strip()
+
+os.environ["OPENAI_API_KEY"] = open("openai.SECRET", "r").read().strip()
 openai.api_key = open("openai.SECRET", "r").read().strip()
 
 
@@ -34,8 +36,22 @@ def call_gpt4(prompt: str):
     print(out)
 
 
+def call_langchain(prompt_template, text):
+    llm = OpenAI(temperature=0.9)
+    prompt = PromptTemplate(
+        input_variables=["text"],
+        template=prompt_template,
+    )
+    chain = LLMChain(llm=llm, prompt=prompt)
+    print(chain.run(text))
+
+
 if __name__ == "__main__":
-    call_gpt4("my name is")
+    text = open("texts/Testing effect.markdown", "r").read().strip()
+    text = text[:2000]
+    # prompt_template = prompts.questioner
+    prompt_template = prompts.competitor
+    prompt_template = prompt_template.strip()
+    prompt = prompt_template.format(text=text)
+    call_langchain(prompt_template=prompt_template, text=text)
 
-
-    
