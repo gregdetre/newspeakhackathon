@@ -36,11 +36,11 @@ def call_gpt4(prompt: str):
     print(out)
 
 
-def call_langchain(text):
+def call_langchain(prompt_template, text):
     llm = OpenAI(temperature=0.9)
     prompt = PromptTemplate(
         input_variables=["text"],
-        template="Your job is to create 5 unique questions based on the following text in order to test a student: {text}",
+        template=prompt_template,
     )
     chain = LLMChain(llm=llm, prompt=prompt)
     print(chain.run(text))
@@ -52,5 +52,5 @@ if __name__ == "__main__":
     prompt = prompts.questioner.format(text=text)
     # print(prompt)
     # call_gpt4("prompt")
-    call_langchain(text)
-    
+    call_langchain(prompt_template=prompts.questioner, text=text)
+
