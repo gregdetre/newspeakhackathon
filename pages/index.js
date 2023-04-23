@@ -6,7 +6,7 @@ export default function Home() {
     const [inputValue, setInputValue] = useState('https://danielmiessler.com/blog/spqa-ai-architecture-replace-existing-software/')
     const [questions, setQuestions] = useState('')
 
-    const [inputSummary, setInputSummary] = useState('')
+    const [inputSummary, setInputSummary] = useState('AI is transforming the way businesses use software with GPTs, allowing them to adapt to how we do business, instead of us adapting to the software. The new architecture is a four-component structure based around GPTs: State, Policy, Questions, and Action, allowing for an Understanding-based architecture with nearly unlimited input. This will enable applications to create documents, strategies, presentations and more in minutes, instead of taking thousands of hours of work.')
     const [studentAnswer, setStudentAnswer] = useState('')
 
     const [score, setScore] = useState('')
@@ -100,6 +100,8 @@ export default function Home() {
         e.preventDefault()
         var article = await runScraper(inputValue)
         // console.log('article', article)
+        document.getElementById("form-student").style.visibility = "visible"
+
         runQuestioner(article)
     }
 
@@ -139,7 +141,7 @@ export default function Home() {
                             </div>
                         </form>
 
-                        <form onSubmit={handleSubmitStudent} className=' flex-grow p-1' visibility='hidden'>
+                        <form id="form-student" onSubmit={handleSubmitStudent} className=' flex-grow p-1' style={{ visibility: 'hidden' }}>
                             <h2 className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text text-center font-bold pb-2 mt-4'>User Explanation</h2>
                             <div className='flex rounded-lg border border-gray-700 bg gray-800 h-1/2'>
                                 <textarea type="text" className='flex-grow px-4 py-2 bg-transparent text-white focus:outline-none overflow-y-scroll' placeholder={'Ask something'} value={inputSummary} onChange={(e) => setInputSummary(e.target.value)} />
