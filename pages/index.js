@@ -32,6 +32,28 @@ export default function Home() {
     }
     // ------ SCRAPER ---------
 
+    // ------ SUMMARIZER -------
+
+    async function runSummarizer(article) {
+        const response = await fetch('/api/APIsummarizer', {
+            methode: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ article })
+        })
+
+        const data = await response.text()
+        const final = JSON.parse(data).output
+
+        return final
+
+    }
+
+
+
+
+    // ------ SUMMARIZER --------
 
     // ------ QUESTIONER ---------
     async function runQuestioner(article) {
@@ -103,7 +125,7 @@ export default function Home() {
         var article = await runScraper(inputValue)
         // console.log('article', article)
         document.getElementById("form-student").style.visibility = "visible"
-
+        article = await runSummarizer(article)
         runQuestioner(article)
     }
 
