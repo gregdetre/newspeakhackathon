@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         res.status(200).json({ output: response });
 
     } catch (error) {
-        // console.log(error);
+        //console.log(error);
         console.log('error in APIagent')
     }
 

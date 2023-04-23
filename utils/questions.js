@@ -1,4 +1,5 @@
 import { LLMChain } from "langchain/chains";
+import OPENAI_API_KEY from ".env.local"
 
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { AgentExecutor, ZeroShotAgent, initializeAgentExecutor } from "langchain/agents";
@@ -7,7 +8,7 @@ import { SerpAPI } from "langchain/tools";
 import { CallbackManager } from "langchain/callbacks";
 import { ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 
-const KEY = process.env.OPENAI_API_KEY
+const KEY = ""
 
 export async function getQuestions(payload) {
 
@@ -29,9 +30,11 @@ export async function getQuestions(payload) {
         llm: model,
     });
 
+
+
     const response = await chain.call({ text: payload });
 
-    console.log('response.text', response.text)
+
 
     return response.text
 }

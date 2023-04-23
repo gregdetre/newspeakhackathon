@@ -7,7 +7,6 @@ export default async function handler(req, res) {
     const { question } = await req.body
     const { answer } = await req.body
     
-
     const response = await getGrader(input, question, answer);
     
     res.status(200).json({ output: response});
