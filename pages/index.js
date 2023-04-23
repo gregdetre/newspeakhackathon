@@ -1,7 +1,7 @@
 
 import { useWhisper } from '@chengsokdara/use-whisper'
 import { useState, useEffect, useRef, useMemo } from 'react'
-
+import OPENAI_API_KEY from '../.env.local'
 
 
 export default function Home() {
@@ -32,6 +32,28 @@ export default function Home() {
     }
     // ------ SCRAPER ---------
 
+    // ------ SUMMARIZER -------
+
+    async function runSummarizer(article) {
+        const response = await fetch('/api/APIsummarizer', {
+            methode: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ article })
+        })
+
+        const data = await response.text()
+        const final = JSON.parse(data).output
+
+        return final
+
+    }
+
+
+
+
+    // ------ SUMMARIZER --------
 
     // ------ QUESTIONER ---------
     async function runQuestioner(article) {
@@ -104,7 +126,7 @@ export default function Home() {
         var article = await runScraper(inputValue)
         // console.log('article', article)
         document.getElementById("form-student").style.visibility = "visible"
-
+        article = await runSummarizer(article)
         runQuestioner(article)
     }
 
@@ -135,8 +157,6 @@ export default function Home() {
     }
 
     //VOICE TO TEXT
-
-
     const {
         recording,
         speaking,
@@ -146,7 +166,7 @@ export default function Home() {
         startRecording,
         stopRecording,
     } = useWhisper({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: OPENAI_API_KEY,
         streaming: true,
         timeSlice: 1_000,
         whisperConfig: {
