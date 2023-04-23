@@ -49,8 +49,9 @@ def call_langchain(prompt_template, text):
 if __name__ == "__main__":
     text = open("texts/Testing effect.markdown", "r").read().strip()
     text = text[:2000]
-    prompt = prompts.questioner.format(text=text)
-    # print(prompt)
-    # call_gpt4("prompt")
-    call_langchain(prompt_template=prompts.questioner, text=text)
+    # prompt_template = prompts.questioner
+    prompt_template = prompts.competitor
+    prompt_template = prompt_template.strip()
+    prompt = prompt_template.format(text=text)
+    call_langchain(prompt_template=prompt_template, text=text)
 
