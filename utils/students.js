@@ -9,9 +9,7 @@ import { ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemp
 
 const KEY = process.env.OPENAI_API_KEY
 
-export async function handler(req, res) {
-    try {
-    input = req.body
+export async function getStudent(payload) {
 
     const model = new ChatOpenAI({
         openAIApiKey: KEY, 
@@ -19,11 +17,12 @@ export async function handler(req, res) {
         
        })
 
-    const template ="Your task is the come up with 5 unique question about the the given text. The questions are needed to test a student's understanding of the text."
+    const template ="You are a student who's learning a new subject, the user will give you an explaination about the subject. your knowledge is limited EXCLUSIVELY to what the user has told you. You will have to answer a series of questions, using only the knowledge you have been given"
 
     const prompt = ChatPromptTemplate.fromPromptMessages([
     SystemMessagePromptTemplate.fromTemplate(template),
     HumanMessagePromptTemplate.fromTemplate("{text}"),
+    HumanMessagePromptTemplate.fromTemplate("{question}"),
     ]);
 
     const chain = new LLMChain({
@@ -33,12 +32,8 @@ export async function handler(req, res) {
 
     console.log("payload" + payload);
 
-    const response = await chain.call({ text: payload });
+    const response = await chain.call({ text: payload, question: "" });
     console.log("response" + response.text);
-    res.status(200).json({ output: response.text });
 
-    } catch (error) {
-    console.log(error);
+    return response.text
 }
-}
-
