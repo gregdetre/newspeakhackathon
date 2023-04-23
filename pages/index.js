@@ -65,7 +65,7 @@ export default function Home() {
 
     // ------ QUESTIONER ---------
     async function runQuestioner(article) {
-        // console.log('in runQuestioner', article.substring(0, 100))
+        console.log('in runQuestioner', article.substring(0, 100))
         const response = await fetch('/api/APIagent', {
             method: 'POST',
             headers: {
@@ -73,6 +73,7 @@ export default function Home() {
             },
             body: JSON.stringify({ input: article }),
         })
+        console.log('after APIagent has been run')
 
         const data = await response.text()
         const final = JSON.parse(data).output
@@ -120,9 +121,9 @@ export default function Home() {
         const data = await response.text()
         const final = JSON.parse(data).output
 
-    const parsed = JSON.parse(final)
-    
-    setGradingComponent((prev) => [...prev, {question: question, answer: answer, score: parsed.grade, feedback: parsed.feedback}])
+        const parsed = JSON.parse(final)
+
+        setGradingComponent((prev) => [...prev, { question: question, answer: answer, score: parsed.grade, feedback: parsed.feedback }])
 
     }
     // ------ GRADER ---------
@@ -156,23 +157,24 @@ export default function Home() {
         setGradingComponent([])
     }
 
-  function GradingReact({question, answer, score, feedback}) {
-    return (
-      <div className='flex flex-col h-1/4 bg-gray-900 my rounded-lg mt-5'>
-          <div className='flex-grow p-6' >
-            <div className='flex items-center gap-x-8'> 
-               <div>
-              <p className='text-white font-bold ext-lg'>{score}%</p>  
-              </div>
-              <div className='space-y-4'>
-              <p className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text font-black text-lg'>{question}</p>
-              <p className='text-white'> <span className='font-bold'> Answer: </span>{answer}</p> 
-              <p className='text-white'><span className='font-bold'> Feedback: </span>{feedback}</p>
-              </div>
+    function GradingReact({ question, answer, score, feedback }) {
+        return (
+            <div className='flex flex-col h-1/4 bg-gray-900 my rounded-lg mt-5'>
+                <div className='flex-grow p-6' >
+                    <div className='flex items-center gap-x-8'>
+                        <div>
+                            <p className='text-white font-bold ext-lg'>{score}%</p>
+                        </div>
+                        <div className='space-y-4'>
+                            <p className='bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text font-black text-lg'>{question}</p>
+                            <p className='text-white'> <span className='font-bold'> Answer: </span>{answer}</p>
+                            <p className='text-white'><span className='font-bold'> Feedback: </span>{feedback}</p>
+                        </div>
 
+                    </div>
+                </div>
             </div>
-          </div> 
-      </div>
+
     )
   }
 
@@ -194,12 +196,13 @@ export default function Home() {
     timeSlice: 1_000,
     whisperConfig: {
       language: "en"
-    }
-  })
+    }})
 
-  useEffect(() => {
-    setInputSummary(transcript.text)
-  }, [transcript])
+    //VOICE TO TEXT
+
+    useEffect(() => {
+        setInputSummary(transcript.text)
+    }, [transcript])
 
     return (
         <>
