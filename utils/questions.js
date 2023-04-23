@@ -14,10 +14,10 @@ export async function getQuestions(payload) {
     const model = new ChatOpenAI({
         openAIApiKey: KEY, 
         temperature: 0,
-        
+        modelName: "gpt-4"
        })
 
-    const template ="Your task is the come up with 5 unique question about the the given text. The questions are needed to test a student's understanding of the text. You are only allowed to answer with a JSON object"
+    const template = "Write 5 unique questions about the given text. The questions are needed to test a student's understanding of the text. the questions must all be based on the given text, and not from background knowledge. You are only allowed to answer with a JSON object containing 'questions' as an array of strings. "
 
     const prompt = ChatPromptTemplate.fromPromptMessages([
     SystemMessagePromptTemplate.fromTemplate(template),

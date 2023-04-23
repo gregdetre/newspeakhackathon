@@ -4,12 +4,11 @@ import { getStudent } from '@/utils/students';
 
 export default async function handler(req, res) {
     try {
-    const { input } = await req.body
-    
-    console.log("input" + input);
 
-    const response = await getStudent(input);
-    console.log("response" + response);
+    const { input } = await req.body
+    const { question } = await req.body;
+
+    const response = await getStudent(input, question);
     
     res.status(200).json({ output: response});
 
