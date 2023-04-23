@@ -12,17 +12,17 @@ const KEY = process.env.OPENAI_API_KEY
 export async function getStudent(payload, question) {
 
     const model = new ChatOpenAI({
-        openAIApiKey: KEY, 
+        openAIApiKey: KEY,
         temperature: 0,
-        
-       })
 
-    const template ="You are a student who's learning a new subject, the user will give you an explaination about the subject. your knowledge is limited EXCLUSIVELY to what the user has told you. You will have to answer a question, using only the knowledge you have been given"
+    })
+
+    const template = "You are a student who's learning a new subject. The user will give you an explanation about the subject. Your knowledge is limited EXCLUSIVELY to what the user has told you. You will have to answer a question, using only the knowledge you have been given"
 
     const prompt = ChatPromptTemplate.fromPromptMessages([
-    SystemMessagePromptTemplate.fromTemplate(template),
-    HumanMessagePromptTemplate.fromTemplate("This is the explanaition: {text}"),
-    HumanMessagePromptTemplate.fromTemplate("Answer the following question: {question}"),
+        SystemMessagePromptTemplate.fromTemplate(template),
+        HumanMessagePromptTemplate.fromTemplate("This is the explanation: {text}"),
+        HumanMessagePromptTemplate.fromTemplate("Answer the following question: {question}"),
     ]);
 
     const chain = new LLMChain({
