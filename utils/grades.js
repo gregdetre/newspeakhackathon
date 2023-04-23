@@ -7,7 +7,7 @@ import { SerpAPI } from "langchain/tools";
 import { CallbackManager } from "langchain/callbacks";
 import { ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 
-const KEY = process.env.OPENAI_API_KEY
+const KEY = ""
 
 export async function getGrader(payload, question, answer) {
 

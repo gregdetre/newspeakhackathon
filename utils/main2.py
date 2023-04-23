@@ -37,7 +37,7 @@ def call_gpt4(prompt: str):
 
 
 def call_langchain(prompt_template, text):
-    llm = OpenAI(temperature=0.9)
+    llm = OpenAI(temperature=0.9) # type: ignore
     prompt = PromptTemplate(
         input_variables=["text"],
         template=prompt_template,
